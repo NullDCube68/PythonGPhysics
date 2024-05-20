@@ -23,9 +23,10 @@ endground_x=window_x
 endground_y=window_y-ground_height
 
 '''Testing'''
-box_shape_xy=200
+box_shape_xy=20
 absolute_starting_box_xpos=300
 absolute_starting_box_ypos=window_y-ground_height-box_shape_xy
+time_in_air=0
 
 '''Pre-defined colors'''
 BLACK = (0,0,0)
@@ -37,19 +38,14 @@ movement_x_positive=False
 movement_x_negative=False
 movement_y_positive=False
 movement_y_negative=False
+jump=False
 
 '''Movement functions (not in use for now)'''
 #Gravity functions
 def gravity_acceleration(ABSX,ABSY):
     return 0
 
-def objectisintheair():
-    global absolute_starting_box_ypos
-    global startground_y
-    global box_shape_xy
-    if absolute_starting_box_ypos==startground_y-box_shape_xy:
-        return False
-    return True
+character_rect=pygame.Rect((absolute_starting_box_xpos,absolute_starting_box_ypos),(box_shape_xy,box_shape_xy))
 
 while True:
     for event in pygame.event.get():
@@ -57,27 +53,34 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type==pygame.KEYDOWN:
-            if event.key==pygame.K_UP:
+            if event.key==pygame.K_w:
                 movement_y_positive=True
-            if event.key==pygame.K_DOWN:
+            if event.key==pygame.K_s:
                 movement_y_negative=True
-            if event.key==pygame.K_LEFT:
+            if event.key==pygame.K_a:
                 movement_x_negative=True
-            if event.key==pygame.K_RIGHT:
+            if event.key==pygame.K_d:
                 movement_x_positive=True
+            if event.key==pygame.K_SPACE:
+                jump = True
         elif event.type==pygame.KEYUP:
-            if event.key==pygame.K_UP:
+            if event.key==pygame.K_w:
                 movement_y_positive=False
-            if event.key==pygame.K_DOWN:
+            if event.key==pygame.K_s:
                 movement_y_negative=False
-            if event.key==pygame.K_LEFT:
+            if event.key==pygame.K_a:
                 movement_x_negative=False
-            if event.key==pygame.K_RIGHT:
+            if event.key==pygame.K_d:
                 movement_x_positive=False
-    if objectisintheair() and movement_y_positive is not True:
-        absolute_starting_box_ypos+=constant_movement
-    if movement_y_positive:
-        absolute_starting_box_ypos-=constant_movement
+            if event.key==pygame.K_SPACE:
+                jump=False
+    if jump:
+        time_in_air += 1
+        inicialvelocity=90
+        velocity=inicialvelocity-(9.8*time_in_air)
+        relativepos=int((velocity)-(0.5*(9.8)*(time_in_air**2)))
+        absolute_starting_box_ypos-=relativepos
+        print(relativepos)
     window.fill(BACKGROUND)
     pygame.draw.line(window,BLACK,(startground_x,startground_y),(endground_x,endground_y),3)
     pygame.draw.rect(window,BLACK,((absolute_starting_box_xpos,absolute_starting_box_ypos),(box_shape_xy,box_shape_xy)),3)
