@@ -27,13 +27,18 @@ box_shape_xy=20
 absolute_starting_box_xpos=300
 absolute_starting_box_ypos=window_y-ground_height-box_shape_xy
 time_in_air=0
+jumping = False
+character_rect=pygame.Rect((absolute_starting_box_xpos,absolute_starting_box_ypos),(box_shape_xy,box_shape_xy))
+ground_rect=pygame.Rect((startground_x,startground_y),(ground_height,window_x))
+
+print(pygame.display.Info())
 
 '''Pre-defined colors'''
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 
 '''Movement variables'''
-constant_movement=10
+constant_movement=20
 movement_x_positive=False
 movement_x_negative=False
 movement_y_positive=False
@@ -44,8 +49,6 @@ jump=False
 #Gravity functions
 def gravity_acceleration(ABSX,ABSY):
     return 0
-
-character_rect=pygame.Rect((absolute_starting_box_xpos,absolute_starting_box_ypos),(box_shape_xy,box_shape_xy))
 
 while True:
     for event in pygame.event.get():
@@ -74,13 +77,23 @@ while True:
                 movement_x_positive=False
             if event.key==pygame.K_SPACE:
                 jump=False
+    
     if jump:
+        jumping=True
+    if jumping:
         time_in_air += 1
-        inicialvelocity=90
-        velocity=inicialvelocity-(9.8*time_in_air)
-        relativepos=int((velocity)-(0.5*(9.8)*(time_in_air**2)))
+        inicialvelocity=15
+        velocity=inicialvelocity-(0.1*time_in_air)
+        relativepos=int((velocity)-(0.5*(0.1)*(time_in_air**2)))
         absolute_starting_box_ypos-=relativepos
-        print(relativepos)
+    if absolute_starting_box_ypos+box_shape_xy >= startground_y:
+        time_in_air=0
+        absolute_starting_box_ypos=startground_y-box_shape_xy
+        jumping=False
+    if movement_x_negative:
+        absolute_starting_box_xpos-=constant_movement
+    if movement_x_positive:
+        absolute_starting_box_xpos+=constant_movement
     window.fill(BACKGROUND)
     pygame.draw.line(window,BLACK,(startground_x,startground_y),(endground_x,endground_y),3)
     pygame.draw.rect(window,BLACK,((absolute_starting_box_xpos,absolute_starting_box_ypos),(box_shape_xy,box_shape_xy)),3)
